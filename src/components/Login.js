@@ -5,16 +5,23 @@ import { auth } from "../utils/firebase";
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
+  updateProfile,
 } from "firebase/auth";
+import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { addUser } from "../utils/userSlice";
 
 const Login = () => {
   const [signIn, setSignIn] = useState(true);
   const [errorMessage, setErrorMessage] = useState(null);
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const toggleSignInForm = () => {
     setSignIn(!signIn);
   };
 
+  const name = useRef(null);
   const email = useRef(null);
   const password = useRef(null);
 
@@ -36,7 +43,30 @@ const Login = () => {
         .then((userCredential) => {
           // Signed up
           const user = userCredential.user;
+          updateProfile(auth.currentUser, {
+            displayName: name.current.value,
+            photoURL:
+              "https://media.licdn.com/dms/image/v2/C4D03AQERam0wxdNSnQ/profile-displayphoto-shrink_800_800/profile-displayphoto-shrink_800_800/0/1655476328268?e=1787184000&v=beta&t=1MuEQCONsyxc2VveoELjVlyeNRe0ycy3sng6PKkC8gM",
+          })
+            .then(() => {
+              // Profile updated!
+              const {uid, email, displayName, photoURL} = auth.currentUser;
+              dispatch(
+                addUser({
+                  uid: uid,
+                  email: email,
+                  displayName: displayName,
+                  photoURL: photoURL,
+                }),
+              );
+              navigate("/browse");
+            })
+            .catch((error) => {
+              setErrorMessage(error.message);
+            });
+
           console.log(user);
+
           // ...
         })
         .catch((error) => {
@@ -55,6 +85,7 @@ const Login = () => {
           // Signed in
           const user = userCredential.user;
           console.log(user);
+          navigate("/browse");
         })
         .catch((error) => {
           const errorCode = error.code;
@@ -81,6 +112,7 @@ const Login = () => {
         <h1 className="text-3xl m-2 py-4">{signIn ? "Sign In" : "Sign Up"}</h1>
         {!signIn && (
           <input
+            ref={name}
             type="text"
             placeholder="Full Name"
             className="p-3 my-4 w-full bg-gray-700"
