@@ -10,7 +10,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { addUser } from "../utils/userSlice";
-import { USER_AVATAR } from "../utils/constants";
+import { BG_URL, USER_AVATAR } from "../utils/constants";
 
 const Login = () => {
   const [signIn, setSignIn] = useState(true);
@@ -99,7 +99,7 @@ const Login = () => {
       <Header />
       <div className="absolute">
         <img
-          src="https://assets.nflxext.com/ffe/siteui/vlv3/918dda59-2ae7-4eaa-9be2-8a3ddd979d4e/web/IN-en-20260720-TRIFECTA-perspective_ca5664c9-e7ca-45da-9d85-173740dbae71_medium.jpg"
+          src={BG_URL}
           alt="bg-img"
         />
       </div>

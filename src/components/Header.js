@@ -5,15 +5,15 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { addUser, removeUser } from "../utils/userSlice";
 import { LOGO } from "../utils/constants";
+import { toggleGptSearchView } from "../utils/gptSlice";
 
 const Header = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const user = useSelector(store => store.user);
+  const user = useSelector((store) => store.user);
   const handleSignOut = () => {
     signOut(auth)
-      .then(() => {
-      })
+      .then(() => {})
       .catch((error) => {
         navigate("/error");
       });
@@ -24,40 +24,47 @@ const Header = () => {
       if (user) {
         // User is signed in, see docs for a list of available properties
         // https://firebase.google.com/docs/reference/js/auth.user
-        const { uid, email, displayName , photoURL} = user;
-        dispatch(addUser({ uid: uid, email: email, displayName: displayName, photoURL:photoURL }));
-        navigate('/browse');
+        const { uid, email, displayName, photoURL } = user;
+        dispatch(
+          addUser({
+            uid: uid,
+            email: email,
+            displayName: displayName,
+            photoURL: photoURL,
+          }),
+        );
+        navigate("/browse");
       } else {
         dispatch(removeUser());
-        navigate('/');
+        navigate("/");
         // User is signed out
       }
     });
 
     // unsubscribe when component unmount
     //onAuthStateChanged returns the unsubscription logic by default
-    return () =>unsubscribe();
+    return () => unsubscribe();
   }, []);
+
+  const handleGptSearchClick = () =>{
+    dispatch(toggleGptSearchView());
+  }
 
   return (
     <div className="absolute w-screen px-8 py-2 bg-gradient-to-b from-black z-10 flex justify-between">
-      <img
-        className="w-40 "
-        alt="logo"
-        src={LOGO}
-      />
+      <img className="w-40 " alt="logo" src={LOGO} />
 
-      {user && <div className="flex p-2">
-        <img
-          className="w-12 h-12"
-          alt="user Icon"
-          src ={user?.photoURL}
-        />
-        <button onClick={handleSignOut} className="font-bold text-white m-2">
-          Sign Out
-        </button>
-      </div>
-}
+      {user && (
+        <div className="flex p-2">
+          <button className="py-2 px-4 mx-4 bg-purple-800 text-white rounded-lg" onClick={handleGptSearchClick}>
+            GPT Search
+          </button>
+          <img className="w-12 h-12" alt="user Icon" src={user?.photoURL} />
+          <button onClick={handleSignOut} className="font-bold text-white m-2">
+            Sign Out
+          </button>
+        </div>
+      )}
     </div>
   );
 };
